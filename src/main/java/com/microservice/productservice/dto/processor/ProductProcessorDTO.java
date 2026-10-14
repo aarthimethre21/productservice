@@ -1,21 +1,24 @@
 package com.microservice.productservice.dto.processor;
+
 import com.microservice.productservice.dto.request.*;
-import com.microservice.productservice.entity.*;
+import com.microservice.productservice.dto.response.ProductResponse;
+import com.microservice.productservice.entity.Product;
 import lombok.*;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProductProcessorDTO {
 
-    private ProductCreateRequest productCreateRequest;
-    private ProductUpdateRequest productUpdateRequest;
-    private ProductStatusUpdateRequest productStatusUpdateRequest;
+    private ProductCreateRequest createRequest;
+    private ProductUpdateRequest updateRequest;
+    private ProductStatusRequest statusRequest;
+
     private Product product;
-    private Inventory inventory;
-    private ProductCategory productCategory;
+    private ProductResponse response;
+
     private Long productId;
-    private String correlationID;
+    private String correlationId;
 }

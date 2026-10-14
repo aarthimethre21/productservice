@@ -1,41 +1,31 @@
 package com.microservice.productservice.dto.request;
 
-
-import com.microservice.productservice.entity.ProductStatus;
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProductUpdateRequest {
 
-    @NotBlank
-    @Size(max=100)
-    private String sku;
+public record ProductUpdateRequest(
 
-    @NotBlank
-    @Size(max=200)
-    private String name;
+        @NotBlank
+        @Size(max = 150)
+        String name,
 
-    @Size(max=1000)
-    private String description;
+        @Size(max = 1000)
+        String description,
 
-    @NotNull
-    @DecimalMin("0.00")
-    @Digits(integer =17, fraction=2)
-    private BigDecimal price;
+        @NotNull
+        @DecimalMin(value = "0.00")
+        @Digits(integer = 17, fraction = 2)
+        BigDecimal price,
 
-    @NotBlank
-    @Pattern(regexp="^[A-Z]{3}$")
-    private String currency;
+        @NotBlank
+        @Pattern(regexp = "^[A-Z]{3}$")
+        String currency,
 
-    private ProductStatus status;
-
-    @Positive
-    private Long categoryID;
-}
+        @NotNull
+        Long categoryId
+) {}

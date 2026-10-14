@@ -1,42 +1,40 @@
 package com.microservice.productservice.dto.request;
 
-
-import com.microservice.productservice.entity.ProductStatus;
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProductCreateRequest {
 
-    @NotBlank
-    @Size(max=100)
-    private String sku;
+public record ProductCreateRequest(
 
-    @NotBlank
-    @Size(max=200)
-    private String name;
+        @NotBlank
+        @Size(max = 50)
+        String sku,
 
-    @Size(max=1000)
-    private String description;
+        @NotBlank
+        @Size(max = 150)
+        String name,
 
-    @NotNull(message = "Price is required")
-    @DecimalMin("0.00") // why can't we use precision = 19, scale = 2
-    @Digits(integer =17, fraction=2)
-    private BigDecimal price;
+        @Size(max = 1000)
+        String description,
 
-    @NotBlank
-    @Pattern(regexp="^[A-Z]{3}$")
-    private String currency;
+        @NotNull
+        @DecimalMin(value = "0.00")
+        @Digits(integer = 17, fraction = 2)
+        BigDecimal price,
 
-    private ProductStatus status;
+        @NotBlank
+        @Pattern(regexp = "^[A-Z]{3}$")
+        String currency,
 
-    @Positive
-    private Long categoryID;
+        @NotNull
+        Long categoryId,
 
-}
+        @NotNull
+        @Min(0)
+        Integer initialQuantity
+) {}

@@ -6,55 +6,53 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="inventory", indexes= {
-        @Index(name="idx_inventory_product_id",
-                columnList ="productId", unique = true)
-})
-
+@Table(name = "inventory", uniqueConstraints = { @UniqueConstraint( name = "uk_inventory_product_id", columnNames = "product_id") } )
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Inventory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private Long productId;
-
-    // Added: relationship with Product using the existing productId column
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
-            name = "productId",
-            referencedColumnName = "id",
-            insertable = false,
-            updatable = false,
+            name = "product_id",
+            nullable = false,
+            unique = true,
             foreignKey = @ForeignKey(name = "fk_inventory_product")
     )
     private Product product;
 
     @Column(nullable = false)
-    private Integer availableQuantity;
+    @Builder.Default
+    private Integer availableQuantity = 0;
 
     @Column(nullable = false)
-    private Integer reservedQuantity;
+    @Builder.Default
+    private Integer reservedQuantity = 0;
 
-    @Column(name = "updatedAt", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @PrePersist
-    @PreUpdate
-    public void preUpdate()
-    {
+    protected void onCreate() {
         updatedAt = LocalDateTime.now();
-        if(availableQuantity==null){
-            availableQuantity=0;
+
+        if (availableQuantity == null) {
+            availableQuantity = 0;
         }
-        if(reservedQuantity==null){
-            reservedQuantity=0;
+
+        if (reservedQuantity == null) {
+            reservedQuantity = 0;
         }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

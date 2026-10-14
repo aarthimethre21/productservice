@@ -1,74 +1,59 @@
 package com.microservice.productservice.controller;
+
 import com.microservice.productservice.dto.request.ProductCreateRequest;
-import com.microservice.productservice.entity.Product;
-import com.microservice.productservice.entity.ProductCategory;
-import com.microservice.productservice.entity.ProductStatus;
-import com.microservice.productservice.mapper.ProductMapper;
-import com.microservice.productservice.ProductProcessor.ProductService;
+import com.microservice.productservice.dto.request.ProductStatusRequest;
+import com.microservice.productservice.dto.request.ProductUpdateRequest;
+import com.microservice.productservice.dto.response.ProductResponse;
+import com.microservice.productservice.processor.ProductProcessor;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/products")
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductProcessor productProcessor;
 
-    private final ProductMapper productMapper;
-
-    public ProductController(
-            ProductService productService,
-            ProductMapper productMapper) {
-        this.productService = productService;
-        this.productMapper = productMapper;
+    public ProductController(ProductProcessor productProcessor) {
+        this.productProcessor = productProcessor;
     }
 
     @PostMapping
-    public Product create(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProductResponse create(
             @Valid @RequestBody ProductCreateRequest request) {
-
-        Product product = productMapper.toEntity(request);
-
-        return productService.createProduct(product);
+        return productProcessor.create(request);
     }
+
     @GetMapping
-    public List<Product> getAll() {
-        return productService.getAllProducts();
+    public List<ProductResponse> getAll() {
+        return productProcessor.getAll();
     }
 
     @GetMapping("/{id}")
-    public Product getById(@PathVariable Long id) {
-        return productService.getProduct(id);
+    public ProductResponse getById(@PathVariable Long id) {
+        return productProcessor.getById(id);
     }
 
     @GetMapping("/sku/{sku}")
-    public Product getBySku(@PathVariable String sku) {
-        return productService.getProductBySku(sku);
+    public ProductResponse getBySku(@PathVariable String sku) {
+        return productProcessor.getBySku(sku);
     }
 
     @PutMapping("/{id}")
-    public Product update(
+    public ProductResponse update(
             @PathVariable Long id,
-            @RequestBody Product product) {
-        return productService.updateProduct(id, product);
+            @Valid @RequestBody ProductUpdateRequest request) {
+        return productProcessor.update(id, request);
     }
 
     @PatchMapping("/{id}/status")
-    public Product changeStatus(
+    public ProductResponse changeStatus(
             @PathVariable Long id,
-            @RequestBody ProductStatus status) {
-        return productService.changeStatus(id, status);
-    }
-
-    @GetMapping("/categories")
-    public List<ProductCategory> getCategories() {
-        return productService.getCategories();
-    }
-
-    @PostMapping("/categories")
-    public ProductCategory createCategory(
-            @RequestBody ProductCategory category) {
-        return productService.createCategory(category);
+            @Valid @RequestBody ProductStatusRequest request) {
+        return productProcessor.changeStatus(id, request);
     }
 }

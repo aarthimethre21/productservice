@@ -1,38 +1,40 @@
 package com.microservice.productservice.controller;
 
-import com.microservice.productservice.entity.Inventory;
-import com.microservice.productservice.ProductProcessor.InventoryService;
+import com.microservice.productservice.dto.request.StockQuantityRequest;
+import com.microservice.productservice.dto.response.InventoryResponse;
+import com.microservice.productservice.processor.InventoryProcessor;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/inventory")
 public class InventoryController {
 
-    private final InventoryService inventoryService;
+    private final InventoryProcessor inventoryProcessor;
 
-    public InventoryController(InventoryService inventoryService) {
-        this.inventoryService = inventoryService;
+    public InventoryController(InventoryProcessor inventoryProcessor) {
+        this.inventoryProcessor = inventoryProcessor;
     }
 
     @GetMapping("/{productId}")
-    public Inventory getStock(@PathVariable Long productId) {
-        return inventoryService.getInventory(productId);
+    public InventoryResponse getStock(
+            @PathVariable Long productId) {
+        return inventoryProcessor.getStock(productId);
     }
 
     @PostMapping("/{productId}/reservations")
-    public Inventory reserve(
+    @ResponseStatus(HttpStatus.OK)
+    public InventoryResponse reserve(
             @PathVariable Long productId,
-            @RequestBody Map<String, Integer> request) {
-        return inventoryService.reserve(
-                productId, request.get("quantity"));
+            @Valid @RequestBody StockQuantityRequest request) {
+        return inventoryProcessor.reserve(productId, request);
     }
 
     @PostMapping("/{productId}/releases")
-    public Inventory release(
+    public InventoryResponse release(
             @PathVariable Long productId,
-            @RequestBody Map<String, Integer> request) {
-        return inventoryService.release(
-                productId, request.get("quantity"));
+            @Valid @RequestBody StockQuantityRequest request) {
+        return inventoryProcessor.release(productId, request);
     }
 }
